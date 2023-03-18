@@ -17,12 +17,6 @@ func main() {
 		Encrypt(),
 		RunCmd(),
 	}
-	// var config config.ConfigStruct
-	// config.LoadConfig()
-
-	// decrypt, _ := secret.DecryptByAes(config.Testpwd, secret.PwdKey)
-
-	// fmt.Printf("解密后：%s\n", decrypt)
 	app.Run(os.Args)
 }
 
