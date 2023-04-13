@@ -8,7 +8,6 @@ import (
 	"crypto/cipher"
 	"encoding/base64"
 	"errors"
-	"fmt"
 )
 
 //加密过程：
@@ -100,17 +99,4 @@ func DecryptByAes(data string, key []byte) ([]byte, error) {
 		return nil, err
 	}
 	return AesDecrypt(dataByte, key)
-}
-
-func EAD() {
-	var origin = []byte("123456")
-	//加密
-	encrypt, _ := EncryptByAes(origin, PwdKey)
-	//解密
-	decrypt, _ := DecryptByAes(encrypt, PwdKey)
-	//打印
-	fmt.Printf("加密前: %s\n", origin)
-	fmt.Printf("加密后: %s\n", encrypt)
-	fmt.Printf("解密后：%s\n", decrypt)
-
 }

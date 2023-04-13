@@ -1,29 +1,75 @@
 package config
 
 import (
+	"fmt"
+
+	"github.com/BigFishC/gmsw/secret"
 	"github.com/spf13/viper"
-	"go.uber.org/zap"
+	"github.com/urfave/cli/v2"
 )
 
 //ConfigStruct 配置文件内容
-var ConfigStruct = struct {
-	Testpwd string `json:"testpwd"`
-	Propwd  string `json:"propwd"`
-}{}
+type ConfigStruct struct {
+	Tpwd string `yaml:"tpwd"`
+	Ppwd string `yaml:"ppwd"`
+}
 
 //LoadConfig 加载配置文件
-func LoadConfig(configpath string) error {
-	configVip := viper.New()
-	configVip.AddConfigPath(configpath)
-	configVip.SetConfigFile("conf.yml")
+func (c *ConfigStruct) LoadConfig() error {
+	configVip := OptConfig("conf.yml")
 	if err := configVip.ReadInConfig(); err != nil {
 		panic(err)
 	}
-	if err := configVip.Unmarshal(&ConfigStruct); err != nil {
+	if err := configVip.Unmarshal(c); err != nil {
 		panic(err)
 	}
-	log := zap.S()
-	log.Info("The currunt configuration  file is: ")
-	log.Infof("%+v", ConfigStruct)
+	return nil
+}
+
+//OptConfig 操作配置文件
+func OptConfig(confName string) *viper.Viper {
+	configVip := viper.New()
+	configVip.SetConfigFile(confName)
+	return configVip
+}
+
+//WriteEncryptPwd 密码加密写入配置方法
+func WriteEncryptPwd(param string, pwd string) error {
+	if pwd == "" {
+		fmt.Printf("%s is nil", param)
+	} else {
+		configVip := OptConfig("conf.yml")
+		if err2 := configVip.ReadInConfig(); err2 != nil {
+			if _, ok := err2.(viper.ConfigFileNotFoundError); ok {
+				panic("配置文件未找到！")
+			} else {
+				panic("找到配置文件,但是解析错误！")
+			}
+		}
+		configVip.Set(param, pwd)
+		configVip.WriteConfig()
+	}
+	return nil
+}
+
+func WriteEnvChange(param string, cli *cli.Context) error {
+	password := cli.String(param)
+	origin := []byte(password)
+	encrypt, _ := secret.EncryptByAes(origin, secret.PwdKey)
+	WriteEncryptPwd(param, encrypt)
+	return nil
+}
+
+//UpdateConfig 更新配置文件
+func (c *ConfigStruct) UpdateConfig(cli *cli.Context) error {
+	env := cli.FlagNames()[0]
+	switch env {
+	case "tpwd":
+		WriteEnvChange("tpwd", cli)
+	case "ppwd":
+		WriteEnvChange("ppwd", cli)
+	default:
+		fmt.Println("Param is error!")
+	}
 	return nil
 }
