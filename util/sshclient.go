@@ -1,21 +1,25 @@
 package util
 
 import (
+	"io/ioutil"
 	"log"
+	"os"
 	"strings"
 
 	"github.com/BigFishC/gmsw/config"
 	"github.com/BigFishC/gmsw/secret"
+	"github.com/pkg/sftp"
 	"github.com/urfave/cli/v2"
 	"golang.org/x/crypto/ssh"
 )
 
 type Cli struct {
-	USER      string      `json:"user"`
-	PWD       string      `json:"pwd"`
-	IP        string      `json:"ip"`
-	PORT      string      `json:"port"`
-	SSHCLIENT *ssh.Client `json:"sshclient"`
+	USER       string       `json:"user"`
+	PWD        string       `json:"pwd"`
+	IP         string       `json:"ip"`
+	PORT       string       `json:"port"`
+	SSHCLIENT  *ssh.Client  `json:"sshclient"`
+	SFTPCLIENT *sftp.Client `json:"sftpclient"`
 }
 
 func (c *Cli) getConfig() *ssh.ClientConfig {
@@ -35,8 +39,12 @@ func (c *Cli) Connect() error {
 	if err != nil {
 		panic(err)
 	}
+	sftp, err := sftp.NewClient(client)
+	if err != nil {
+		panic(err)
+	}
 	c.SSHCLIENT = client
-	// defer client.Close()
+	c.SFTPCLIENT = sftp
 	return nil
 }
 
@@ -55,32 +63,34 @@ func (c *Cli) ChangeEnv(envparam string, pwdparam string, cli *cli.Context) erro
 	return nil
 }
 
-//Run
-func (c *Cli) Run(cli *cli.Context) error {
-	var config config.ConfigStruct
-	config.LoadConfig()
-	analysiCmd := cli.Args().Get(0)
-
-	if cli.String("P") == "" {
-		env := cli.FlagNames()[0]
-		switch env {
-		case "t":
-			c.ChangeEnv("t", config.Tpwd, cli)
-		case "p":
-			c.ChangeEnv("p", config.Ppwd, cli)
-		}
-		c.PORT = "22"
-	} else {
-		env := cli.FlagNames()[1]
-		switch env {
-		case "t":
-			c.ChangeEnv("t", config.Tpwd, cli)
-		case "p":
-			c.ChangeEnv("p", config.Ppwd, cli)
-		}
-		c.PORT = cli.String("P")
+func (c *Cli) UploadFile(localfile string, remotefile string, cli *cli.Context) error {
+	file, err := os.Open(localfile)
+	if err != nil {
+		panic(err)
 	}
+	defer file.Close()
 
+	if cli.Args().Len() > 0 {
+		if err := c.Connect(); err != nil {
+			log.Fatal(err)
+		}
+		ftpFile, err := c.SFTPCLIENT.Create(remotefile)
+		if err != nil {
+			log.Fatal(err)
+		}
+		defer ftpFile.Close()
+		fileByte, err := ioutil.ReadAll(file)
+		if err != nil {
+			panic(err)
+		}
+		ftpFile.Write(fileByte)
+	} else {
+		log.Fatal("Param is too match!")
+	}
+	return nil
+}
+
+func (c *Cli) Run(cmd string, cli *cli.Context) error {
 	if cli.Args().Len() > 0 {
 		if err := c.Connect(); err != nil {
 			log.Fatal(err)
@@ -90,12 +100,67 @@ func (c *Cli) Run(cli *cli.Context) error {
 			log.Fatal(err)
 		}
 		defer session.Close()
-		if err := session.Run(analysiCmd); err != nil {
-			log.Fatalf("Failed to run %s", analysiCmd)
+		if err := session.Run(cmd); err != nil {
+			log.Fatalf("Failed to run %s", cmd)
 		}
-		log.Fatalf("Successed to run %s", analysiCmd)
+		log.Fatalf("Successed to run %s", cmd)
 	} else {
 		log.Fatal("Param is too match!")
+	}
+	return nil
+}
+
+//Run server
+func (c *Cli) Server(cli *cli.Context) error {
+	var config config.ConfigStruct
+	config.LoadConfig()
+	analysiCmd := cli.Args().Get(0)
+	if cli.String("P") == "" {
+		c.PORT = "22"
+		if cli.FlagNames()[0] == "T" {
+			env := cli.FlagNames()[1]
+			switch env {
+			case "t":
+				c.ChangeEnv("t", config.Tpwd, cli)
+			case "p":
+				c.ChangeEnv("p", config.Ppwd, cli)
+			}
+			localFile := cli.String("T")
+			c.UploadFile(localFile, analysiCmd, cli)
+		} else {
+			env := cli.FlagNames()[0]
+			switch env {
+			case "t":
+				c.ChangeEnv("t", config.Tpwd, cli)
+			case "p":
+				c.ChangeEnv("p", config.Ppwd, cli)
+			}
+			c.Run(analysiCmd, cli)
+		}
+
+	} else {
+		c.PORT = cli.String("P")
+		if cli.FlagNames()[1] == "T" {
+			env := cli.FlagNames()[2]
+			switch env {
+			case "t":
+				c.ChangeEnv("t", config.Tpwd, cli)
+			case "p":
+				c.ChangeEnv("p", config.Ppwd, cli)
+			}
+			localFile := cli.String("T")
+			c.UploadFile(localFile, analysiCmd, cli)
+		} else {
+			env := cli.FlagNames()[1]
+			switch env {
+			case "t":
+				c.ChangeEnv("t", config.Tpwd, cli)
+			case "p":
+				c.ChangeEnv("p", config.Ppwd, cli)
+			}
+			c.Run(analysiCmd, cli)
+		}
+
 	}
 
 	return nil

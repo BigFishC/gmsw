@@ -23,7 +23,7 @@ func main() {
 func Encrypt() *cli.Command {
 	return &cli.Command{
 		Name:   "encrypt",
-		Usage:  "encrypt --tpwd=string | encrypt --ppwd=string",
+		Usage:  "encrypt --tpwd=string | --ppwd=string",
 		Action: (&config.ConfigStruct{}).UpdateConfig,
 		Flags: []cli.Flag{
 			&cli.StringFlag{
@@ -41,7 +41,7 @@ func Encrypt() *cli.Command {
 func RunCmd() *cli.Command {
 	return &cli.Command{
 		Name:  "cmd",
-		Usage: "cmd user@ip 'cmd line'",
+		Usage: "cmd -P  -T  -t | -p user@ip 'something'",
 		Flags: []cli.Flag{
 			&cli.StringFlag{
 				Name:  "t",
@@ -55,7 +55,11 @@ func RunCmd() *cli.Command {
 				Name:  "P",
 				Usage: "--port",
 			},
+			&cli.StringFlag{
+				Name:  "T",
+				Usage: "--trans",
+			},
 		},
-		Action: (&util.Cli{}).Run,
+		Action: (&util.Cli{}).Server,
 	}
 }
