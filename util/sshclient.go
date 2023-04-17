@@ -83,7 +83,10 @@ func (c *Cli) UploadFile(localfile string, remotefile string, cli *cli.Context) 
 		if err != nil {
 			panic(err)
 		}
-		ftpFile.Write(fileByte)
+		if _, err := ftpFile.Write(fileByte); err != nil {
+			panic(err)
+		}
+		log.Fatalf("Successed to transfer %s", remotefile)
 	} else {
 		log.Fatal("Param is too match!")
 	}
