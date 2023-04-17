@@ -1,7 +1,6 @@
 package util
 
 import (
-	"fmt"
 	"log"
 	"strings"
 
@@ -48,7 +47,6 @@ func (c *Cli) ChangeEnv(envparam string, pwdparam string, cli *cli.Context) erro
 		panic(err)
 	}
 	analysiInfo := cli.String(envparam)
-	fmt.Println(analysiInfo)
 	analysiStringSplite := strings.Split(analysiInfo, "@")
 	c.USER = analysiStringSplite[0]
 	c.IP = analysiStringSplite[1]
