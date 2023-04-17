@@ -62,19 +62,27 @@ func (c *Cli) Run(cli *cli.Context) error {
 	var config config.ConfigStruct
 	config.LoadConfig()
 	analysiCmd := cli.Args().Get(0)
-	env := cli.FlagNames()[0]
-	switch env {
-	case "t":
-		c.ChangeEnv("t", config.Tpwd, cli)
-	case "p":
-		c.ChangeEnv("p", config.Ppwd, cli)
-	}
 
 	if cli.String("P") == "" {
+		env := cli.FlagNames()[0]
+		switch env {
+		case "t":
+			c.ChangeEnv("t", config.Tpwd, cli)
+		case "p":
+			c.ChangeEnv("p", config.Ppwd, cli)
+		}
 		c.PORT = "22"
 	} else {
+		env := cli.FlagNames()[1]
+		switch env {
+		case "t":
+			c.ChangeEnv("t", config.Tpwd, cli)
+		case "p":
+			c.ChangeEnv("p", config.Ppwd, cli)
+		}
 		c.PORT = cli.String("P")
 	}
+
 	if cli.Args().Len() > 0 {
 		if err := c.Connect(); err != nil {
 			log.Fatal(err)
