@@ -16,7 +16,7 @@ type ConfigStruct struct {
 
 //LoadConfig 加载配置文件
 func (c *ConfigStruct) LoadConfig() error {
-	configVip := OptConfig("conf.yml")
+	configVip := OptConfig("/bitnami/jenkins/conf.yml")
 	if err := configVip.ReadInConfig(); err != nil {
 		panic(err)
 	}
@@ -38,7 +38,7 @@ func WriteEncryptPwd(param string, pwd string) error {
 	if pwd == "" {
 		fmt.Printf("%s is nil", param)
 	} else {
-		configVip := OptConfig("conf.yml")
+		configVip := OptConfig("/bitnami/jenkins/conf.yml")
 		if err2 := configVip.ReadInConfig(); err2 != nil {
 			if _, ok := err2.(viper.ConfigFileNotFoundError); ok {
 				panic("配置文件未找到！")

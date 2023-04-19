@@ -17,7 +17,9 @@ func main() {
 		Encrypt(),
 		RunCmd(),
 	}
+
 	app.Run(os.Args)
+
 }
 
 func Encrypt() *cli.Command {

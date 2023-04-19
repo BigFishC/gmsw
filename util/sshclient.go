@@ -1,6 +1,7 @@
 package util
 
 import (
+	"fmt"
 	"io/ioutil"
 	"log"
 	"os"
@@ -86,7 +87,7 @@ func (c *Cli) UploadFile(localfile string, remotefile string, cli *cli.Context) 
 		if _, err := ftpFile.Write(fileByte); err != nil {
 			panic(err)
 		}
-		log.Fatalf("Successed to transfer %s", remotefile)
+		fmt.Printf("Successed to transfer %s", remotefile)
 	} else {
 		log.Fatal("Param is too match!")
 	}
@@ -106,7 +107,8 @@ func (c *Cli) Run(cmd string, cli *cli.Context) error {
 		if err := session.Run(cmd); err != nil {
 			log.Fatalf("Failed to run %s", cmd)
 		}
-		log.Fatalf("Successed to run %s", cmd)
+		fmt.Printf("Successed to run %s\n", cmd)
+
 	} else {
 		log.Fatal("Param is too match!")
 	}
@@ -115,6 +117,7 @@ func (c *Cli) Run(cmd string, cli *cli.Context) error {
 
 //Run server
 func (c *Cli) Server(cli *cli.Context) error {
+
 	var config config.ConfigStruct
 	config.LoadConfig()
 	analysiCmd := cli.Args().Get(0)
