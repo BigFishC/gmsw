@@ -4,6 +4,7 @@ import (
 	"os"
 
 	"github.com/BigFishC/gmsw/config"
+	"github.com/BigFishC/gmsw/proc"
 	"github.com/BigFishC/gmsw/util"
 	"github.com/urfave/cli/v2"
 )
@@ -16,6 +17,7 @@ func main() {
 	app.Commands = []*cli.Command{
 		Encrypt(),
 		RunCmd(),
+		KillProcess(),
 	}
 
 	app.Run(os.Args)
@@ -63,5 +65,27 @@ func RunCmd() *cli.Command {
 			},
 		},
 		Action: (&util.Cli{}).Server,
+	}
+}
+
+func KillProcess() *cli.Command {
+	return &cli.Command{
+		Name:  "kill",
+		Usage: "kill servicename",
+		Action: func(c *cli.Context) error {
+			pname := c.Args().First()
+			proc.KillProcess(pname)
+			return nil
+		},
+		// Flags: []cli.Flag{
+		// 	&cli.StringFlag{
+		// 		Name:  "tpwd",
+		// 		Usage: "--tpwd",
+		// 	},
+		// 	&cli.StringFlag{
+		// 		Name:  "ppwd",
+		// 		Usage: "--ppwd",
+		// 	},
+		// },
 	}
 }
