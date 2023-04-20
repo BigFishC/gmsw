@@ -1,6 +1,8 @@
 package proc
 
 import (
+	"strings"
+
 	"github.com/shirou/gopsutil/v3/process"
 )
 
@@ -12,8 +14,8 @@ func KillProcess(processname string) error {
 		panic(err)
 	}
 	for _, p := range processes {
-		n, _ := p.Name()
-		if n == processname {
+		cmdline, _ := p.Cmdline()
+		if strings.Contains(cmdline, processname) {
 			p.Kill()
 		}
 	}
