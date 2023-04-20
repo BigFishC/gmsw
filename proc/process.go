@@ -1,6 +1,7 @@
 package proc
 
 import (
+	"os"
 	"strings"
 
 	"github.com/shirou/gopsutil/v3/process"
@@ -17,6 +18,7 @@ func KillProcess(processname string) error {
 		cmdline, _ := p.Cmdline()
 		if strings.Contains(cmdline, processname) {
 			p.Kill()
+			os.Exit(0)
 		}
 	}
 	return nil
