@@ -77,15 +77,5 @@ func KillProcess() *cli.Command {
 			proc.KillProcess(pname)
 			return nil
 		},
-		// Flags: []cli.Flag{
-		// 	&cli.StringFlag{
-		// 		Name:  "tpwd",
-		// 		Usage: "--tpwd",
-		// 	},
-		// 	&cli.StringFlag{
-		// 		Name:  "ppwd",
-		// 		Usage: "--ppwd",
-		// 	},
-		// },
 	}
 }
