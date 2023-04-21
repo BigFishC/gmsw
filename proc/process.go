@@ -16,7 +16,7 @@ func KillProcess(processname string) error {
 	}
 	for _, p := range processes {
 		cmdline, _ := p.Cmdline()
-		if strings.Contains(cmdline, processname) {
+		if strings.Contains(cmdline, processname) && !strings.Contains(cmdline, "gmsf") {
 			p.Kill()
 			os.Exit(0)
 		}

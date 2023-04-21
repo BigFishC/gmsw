@@ -75,7 +75,9 @@ func (c *Cli) UploadFile(localfile string, remotefile string, cli *cli.Context) 
 		if err := c.Connect(); err != nil {
 			log.Fatal(err)
 		}
+
 		ftpFile, err := c.SFTPCLIENT.Create(remotefile)
+
 		if err != nil {
 			log.Fatal(err)
 		}

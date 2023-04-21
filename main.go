@@ -5,6 +5,7 @@ import (
 
 	"github.com/BigFishC/gmsw/config"
 	"github.com/BigFishC/gmsw/proc"
+	"github.com/BigFishC/gmsw/service"
 	"github.com/BigFishC/gmsw/util"
 	"github.com/urfave/cli/v2"
 )
@@ -18,6 +19,7 @@ func main() {
 		Encrypt(),
 		RunCmd(),
 		KillProcess(),
+		StartService(),
 	}
 
 	app.Run(os.Args)
@@ -77,5 +79,23 @@ func KillProcess() *cli.Command {
 			proc.KillProcess(pname)
 			return nil
 		},
+	}
+}
+
+func StartService() *cli.Command {
+	return &cli.Command{
+		Name:  "start",
+		Usage: "start -d directory -c cmd",
+		Flags: []cli.Flag{
+			&cli.StringFlag{
+				Name:  "d",
+				Usage: "run `directory`",
+			},
+			&cli.StringFlag{
+				Name:  "c",
+				Usage: "run `cmdline`",
+			},
+		},
+		Action: (&service.SShell{}).StartUp,
 	}
 }
