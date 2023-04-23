@@ -23,6 +23,8 @@ type Cli struct {
 	SFTPCLIENT *sftp.Client `json:"sftpclient"`
 }
 
+const size = 1 << 15
+
 func (c *Cli) getConfig() *ssh.ClientConfig {
 	config := &ssh.ClientConfig{
 		User: c.USER,
@@ -40,7 +42,7 @@ func (c *Cli) Connect() error {
 	if err != nil {
 		panic(err)
 	}
-	sftp, err := sftp.NewClient(client)
+	sftp, err := sftp.NewClient(client, sftp.MaxPacket(size))
 	if err != nil {
 		panic(err)
 	}
@@ -83,6 +85,7 @@ func (c *Cli) UploadFile(localfile string, remotefile string, cli *cli.Context) 
 		}
 		defer ftpFile.Close()
 		fileByte, err := ioutil.ReadAll(file)
+		// fileByte, err := io.ReadFull(file, make([]byte, 1e9))
 		if err != nil {
 			panic(err)
 		}
