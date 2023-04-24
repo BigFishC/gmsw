@@ -2,6 +2,7 @@ package config
 
 import (
 	"fmt"
+	"log"
 
 	"github.com/BigFishC/gmsw/secret"
 	"github.com/spf13/viper"
@@ -62,14 +63,19 @@ func WriteEnvChange(param string, cli *cli.Context) error {
 
 //UpdateConfig 更新配置文件
 func (c *ConfigStruct) UpdateConfig(cli *cli.Context) error {
-	env := cli.FlagNames()[0]
-	switch env {
-	case "tpwd":
-		WriteEnvChange("tpwd", cli)
-	case "ppwd":
-		WriteEnvChange("ppwd", cli)
-	default:
-		fmt.Println("Param is error!")
+
+	if cli.NArg() > 0 {
+		env := cli.FlagNames()[0]
+		switch env {
+		case "tpwd":
+			WriteEnvChange("tpwd", cli)
+		case "ppwd":
+			WriteEnvChange("ppwd", cli)
+		default:
+			fmt.Println("Param is error!")
+		}
+	} else {
+		log.Fatal("Please use the -h parameter for help")
 	}
 	return nil
 }

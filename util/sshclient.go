@@ -125,53 +125,57 @@ func (c *Cli) Server(cli *cli.Context) error {
 
 	var config config.ConfigStruct
 	config.LoadConfig()
-	analysiCmd := cli.Args().Get(0)
-	if cli.String("P") == "" {
-		c.PORT = "22"
-		if cli.FlagNames()[0] == "T" {
-			env := cli.FlagNames()[1]
-			switch env {
-			case "t":
-				c.ChangeEnv("t", config.Tpwd, cli)
-			case "p":
-				c.ChangeEnv("p", config.Ppwd, cli)
+	if cli.NArg() > 0 {
+		analysiCmd := cli.Args().Get(0)
+		if cli.String("P") == "" {
+			c.PORT = "22"
+			if cli.FlagNames()[0] == "T" {
+				env := cli.FlagNames()[1]
+				switch env {
+				case "t":
+					c.ChangeEnv("t", config.Tpwd, cli)
+				case "p":
+					c.ChangeEnv("p", config.Ppwd, cli)
+				}
+				localFile := cli.String("T")
+				c.UploadFile(localFile, analysiCmd, cli)
+			} else {
+				env := cli.FlagNames()[0]
+				switch env {
+				case "t":
+					c.ChangeEnv("t", config.Tpwd, cli)
+				case "p":
+					c.ChangeEnv("p", config.Ppwd, cli)
+				}
+				c.Run(analysiCmd, cli)
 			}
-			localFile := cli.String("T")
-			c.UploadFile(localFile, analysiCmd, cli)
-		} else {
-			env := cli.FlagNames()[0]
-			switch env {
-			case "t":
-				c.ChangeEnv("t", config.Tpwd, cli)
-			case "p":
-				c.ChangeEnv("p", config.Ppwd, cli)
-			}
-			c.Run(analysiCmd, cli)
-		}
 
+		} else {
+			c.PORT = cli.String("P")
+			if cli.FlagNames()[1] == "T" {
+				env := cli.FlagNames()[2]
+				switch env {
+				case "t":
+					c.ChangeEnv("t", config.Tpwd, cli)
+				case "p":
+					c.ChangeEnv("p", config.Ppwd, cli)
+				}
+				localFile := cli.String("T")
+				c.UploadFile(localFile, analysiCmd, cli)
+			} else {
+				env := cli.FlagNames()[1]
+				switch env {
+				case "t":
+					c.ChangeEnv("t", config.Tpwd, cli)
+				case "p":
+					c.ChangeEnv("p", config.Ppwd, cli)
+				}
+				c.Run(analysiCmd, cli)
+			}
+
+		}
 	} else {
-		c.PORT = cli.String("P")
-		if cli.FlagNames()[1] == "T" {
-			env := cli.FlagNames()[2]
-			switch env {
-			case "t":
-				c.ChangeEnv("t", config.Tpwd, cli)
-			case "p":
-				c.ChangeEnv("p", config.Ppwd, cli)
-			}
-			localFile := cli.String("T")
-			c.UploadFile(localFile, analysiCmd, cli)
-		} else {
-			env := cli.FlagNames()[1]
-			switch env {
-			case "t":
-				c.ChangeEnv("t", config.Tpwd, cli)
-			case "p":
-				c.ChangeEnv("p", config.Ppwd, cli)
-			}
-			c.Run(analysiCmd, cli)
-		}
-
+		log.Fatal("Please use the -h parameter for help")
 	}
 
 	return nil
