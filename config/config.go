@@ -9,13 +9,13 @@ import (
 	"github.com/urfave/cli/v2"
 )
 
-//ConfigStruct 配置文件内容
+// ConfigStruct 配置文件内容
 type ConfigStruct struct {
 	Tpwd string `yaml:"tpwd"`
 	Ppwd string `yaml:"ppwd"`
 }
 
-//LoadConfig 加载配置文件
+// LoadConfig 加载配置文件
 func (c *ConfigStruct) LoadConfig() error {
 	configVip := OptConfig("/bitnami/jenkins/conf.yml")
 	if err := configVip.ReadInConfig(); err != nil {
@@ -27,14 +27,14 @@ func (c *ConfigStruct) LoadConfig() error {
 	return nil
 }
 
-//OptConfig 操作配置文件
+// OptConfig 操作配置文件
 func OptConfig(confName string) *viper.Viper {
 	configVip := viper.New()
 	configVip.SetConfigFile(confName)
 	return configVip
 }
 
-//WriteEncryptPwd 密码加密写入配置方法
+// WriteEncryptPwd 密码加密写入配置方法
 func WriteEncryptPwd(param string, pwd string) error {
 	if pwd == "" {
 		fmt.Printf("%s is nil", param)
@@ -61,10 +61,9 @@ func WriteEnvChange(param string, cli *cli.Context) error {
 	return nil
 }
 
-//UpdateConfig 更新配置文件
+// UpdateConfig 更新配置文件
 func (c *ConfigStruct) UpdateConfig(cli *cli.Context) error {
-
-	if cli.NArg() > 0 {
+	if cli.NArg() == 0 {
 		env := cli.FlagNames()[0]
 		switch env {
 		case "tpwd":

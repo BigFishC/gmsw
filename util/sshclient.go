@@ -2,7 +2,6 @@ package util
 
 import (
 	"fmt"
-	"io/ioutil"
 	"log"
 	"os"
 	"strings"
@@ -36,7 +35,7 @@ func (c *Cli) getConfig() *ssh.ClientConfig {
 	return config
 }
 
-//Connect
+// Connect
 func (c *Cli) Connect() error {
 	client, err := ssh.Dial("tcp", c.IP+":"+c.PORT, c.getConfig())
 	if err != nil {
@@ -51,7 +50,7 @@ func (c *Cli) Connect() error {
 	return nil
 }
 
-//ChangeEnv
+// ChangeEnv
 func (c *Cli) ChangeEnv(envparam string, pwdparam string, cli *cli.Context) error {
 	decrypt, err := secret.DecryptByAes(pwdparam, secret.PwdKey)
 	if err != nil {
@@ -84,12 +83,15 @@ func (c *Cli) UploadFile(localfile string, remotefile string, cli *cli.Context) 
 			log.Fatal(err)
 		}
 		defer ftpFile.Close()
-		fileByte, err := ioutil.ReadAll(file)
+
+		// fileByte, err := ioutil.ReadAll(file)
 		// fileByte, err := io.ReadFull(file, make([]byte, 1e9))
 		if err != nil {
 			panic(err)
 		}
-		if _, err := ftpFile.Write(fileByte); err != nil {
+
+		// if _, err := ftpFile.Write(fileByte); err != nil {
+		if _, err := ftpFile.ReadFromWithConcurrency(file, 10); err != nil {
 			panic(err)
 		}
 		fmt.Printf("Successed to transfer %s", remotefile)
@@ -120,7 +122,7 @@ func (c *Cli) Run(cmd string, cli *cli.Context) error {
 	return nil
 }
 
-//Run server
+// Run server
 func (c *Cli) Server(cli *cli.Context) error {
 
 	var config config.ConfigStruct

@@ -36,11 +36,11 @@ func Encrypt() *cli.Command {
 		Flags: []cli.Flag{
 			&cli.StringFlag{
 				Name:  "tpwd",
-				Usage: "--tpwd",
+				Usage: "--tpwd=`STRING`",
 			},
 			&cli.StringFlag{
 				Name:  "ppwd",
-				Usage: "--ppwd",
+				Usage: "--ppwd=`STRING`",
 			},
 		},
 	}
@@ -50,23 +50,23 @@ func RunCmd() *cli.Command {
 	return &cli.Command{
 		Name:      "cmd",
 		Usage:     "Run commands remotely and transfer files to a remote computer",
-		UsageText: "gmsf cmd -P  -T  -t | -p user@ip 'something'",
+		UsageText: "gmsf cmd [-P] [-T] [-t | -p] user@ip 'something'",
 		Flags: []cli.Flag{
 			&cli.StringFlag{
 				Name:  "t",
-				Usage: "--tenv",
+				Usage: "--tenv` `",
 			},
 			&cli.StringFlag{
 				Name:  "p",
-				Usage: "--penv",
+				Usage: "--penv` `",
 			},
 			&cli.StringFlag{
 				Name:  "P",
-				Usage: "--port",
+				Usage: "--port=`PORT`",
 			},
 			&cli.StringFlag{
 				Name:  "T",
-				Usage: "--trans",
+				Usage: "--trans=`FILENAME`",
 			},
 		},
 		Action: (&util.Cli{}).Server,
