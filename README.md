@@ -26,10 +26,10 @@
 [root@localhost]# gmsf  cmd -P 端口 -t user@ip 'cmdline'
 
 + 传输文件  
-[root@localhost]# gmsf  cmd -T 文件完成路径 -t user@ip '目标段文件完成路径'
+[root@localhost]# gmsf  cmd -T 文件完成路径 -t user@ip '目标段文件完成路径'   //默认5个并发传输
 
 + 传输文件（非22端口）  
-[root@localhost]# gmsf  cmd -P 端口 -T 文件完成路径 -t user@ip '目标段文件完成路径'
+[root@localhost]# gmsf  cmd -P 端口 -T 文件完成路径 -t user@ip '目标段文件完成路径' //默认5个并发传输
 
 + kill 服务  
 [root@localhost]# gmsf  kill servicename
