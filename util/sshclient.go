@@ -3,6 +3,7 @@ package util
 import (
 	"fmt"
 	"log"
+	"net"
 	"os"
 	"strings"
 
@@ -20,7 +21,7 @@ type Cli struct {
 	PORT       string       `json:"port"`
 	TRANSFER   string       `json:"transfer"`
 	ENV        string       `json:"enviroment"`
-	EFLAG      string       `json:"eflag"`
+	EFLAG      int          `json:"eflag"`
 	SOURCEFILE string       `json:"sourcefile"`
 	SSHCLIENT  *ssh.Client  `json:"sshclient"`
 	SFTPCLIENT *sftp.Client `json:"sftpclient"`
@@ -54,6 +55,17 @@ func (c *Cli) Connect() error {
 	return nil
 }
 
+//Check host parameter
+
+func CheckHost(host string) bool {
+	infos := strings.Split(host, "@")
+	ip := infos[1]
+	if net.ParseIP(ip) != nil {
+		return true
+	}
+	return false
+}
+
 // ChangeEnv
 func (c *Cli) ChangeEnv(envparam string, pwdparam string, cli *cli.Context) error {
 	decrypt, err := secret.DecryptByAes(pwdparam, secret.PwdKey)
@@ -61,11 +73,14 @@ func (c *Cli) ChangeEnv(envparam string, pwdparam string, cli *cli.Context) erro
 		panic(err)
 	}
 	analysiInfo := cli.String(envparam)
-	analysiStringSplite := strings.Split(analysiInfo, "@")
-	c.USER = analysiStringSplite[0]
-	c.IP = analysiStringSplite[1]
-	c.PWD = string(decrypt)
-
+	if analysiInfo == "" || CheckHost(analysiInfo) == false {
+		log.Fatal("The parameter is error !")
+	} else {
+		analysiStringSplite := strings.Split(analysiInfo, "@")
+		c.USER = analysiStringSplite[0]
+		c.IP = analysiStringSplite[1]
+		c.PWD = string(decrypt)
+	}
 	return nil
 }
 
@@ -139,14 +154,16 @@ func (c *Cli) Server(cli *cli.Context) error {
 			case "T":
 				c.TRANSFER = "T"
 				if cli.String("T") == "" {
-					log.Fatal("Source file could not nil !")
+					log.Fatal("Source file could not be null !")
 				} else {
 					c.SOURCEFILE = cli.String("T")
 				}
 			case "t":
 				c.ENV = "t"
+				c.EFLAG = c.EFLAG + 1
 			case "p":
 				c.ENV = "p"
+				c.EFLAG = c.EFLAG + 1
 			}
 		}
 		c.ChangeEnv(c.ENV, config.Tpwd, cli)
@@ -154,11 +171,16 @@ func (c *Cli) Server(cli *cli.Context) error {
 		if c.PORT == "" {
 			c.PORT = "22"
 		}
-		if c.TRANSFER == "" {
-			c.Run(analysiCmd, cli)
+		if c.EFLAG == 1 {
+			if c.TRANSFER == "" {
+				c.Run(analysiCmd, cli)
+			} else {
+				c.UploadFile(c.SOURCEFILE, analysiCmd, cli)
+			}
 		} else {
-			c.UploadFile(c.SOURCEFILE, analysiCmd, cli)
+			log.Fatal("Enviroment is error !")
 		}
+
 	} else {
 		log.Fatal("Please use the -h parameter for help")
 	}
