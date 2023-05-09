@@ -18,6 +18,10 @@ type Cli struct {
 	PWD        string       `json:"pwd"`
 	IP         string       `json:"ip"`
 	PORT       string       `json:"port"`
+	TRANSFER   string       `json:"transfer"`
+	ENV        string       `json:"enviroment"`
+	EFLAG      string       `json:"eflag"`
+	SOURCEFILE string       `json:"sourcefile"`
 	SSHCLIENT  *ssh.Client  `json:"sshclient"`
 	SFTPCLIENT *sftp.Client `json:"sftpclient"`
 }
@@ -84,13 +88,10 @@ func (c *Cli) UploadFile(localfile string, remotefile string, cli *cli.Context) 
 		}
 		defer ftpFile.Close()
 
-		// fileByte, err := ioutil.ReadAll(file)
-		// fileByte, err := io.ReadFull(file, make([]byte, 1e9))
 		if err != nil {
 			panic(err)
 		}
 
-		// if _, err := ftpFile.Write(fileByte); err != nil {
 		if _, err := ftpFile.ReadFromWithConcurrency(file, 10); err != nil {
 			panic(err)
 		}
@@ -124,57 +125,39 @@ func (c *Cli) Run(cmd string, cli *cli.Context) error {
 
 // Run server
 func (c *Cli) Server(cli *cli.Context) error {
-
 	var config config.ConfigStruct
 	config.LoadConfig()
 	if cli.NArg() > 0 {
+		for _, v := range cli.FlagNames() {
+			switch v {
+			case "P":
+				if cli.String("P") == "" {
+					c.PORT = "22"
+				} else {
+					c.PORT = cli.String("P")
+				}
+			case "T":
+				c.TRANSFER = "T"
+				if cli.String("T") == "" {
+					log.Fatal("Source file could not nil !")
+				} else {
+					c.SOURCEFILE = cli.String("T")
+				}
+			case "t":
+				c.ENV = "t"
+			case "p":
+				c.ENV = "p"
+			}
+		}
+		c.ChangeEnv(c.ENV, config.Tpwd, cli)
 		analysiCmd := cli.Args().Get(0)
-		if cli.String("P") == "" {
+		if c.PORT == "" {
 			c.PORT = "22"
-			if cli.FlagNames()[0] == "T" {
-				env := cli.FlagNames()[1]
-				switch env {
-				case "t":
-					c.ChangeEnv("t", config.Tpwd, cli)
-				case "p":
-					c.ChangeEnv("p", config.Ppwd, cli)
-				}
-				localFile := cli.String("T")
-				c.UploadFile(localFile, analysiCmd, cli)
-			} else {
-				env := cli.FlagNames()[0]
-				switch env {
-				case "t":
-					c.ChangeEnv("t", config.Tpwd, cli)
-				case "p":
-					c.ChangeEnv("p", config.Ppwd, cli)
-				}
-				c.Run(analysiCmd, cli)
-			}
-
+		}
+		if c.TRANSFER == "" {
+			c.Run(analysiCmd, cli)
 		} else {
-			c.PORT = cli.String("P")
-			if cli.FlagNames()[1] == "T" {
-				env := cli.FlagNames()[2]
-				switch env {
-				case "t":
-					c.ChangeEnv("t", config.Tpwd, cli)
-				case "p":
-					c.ChangeEnv("p", config.Ppwd, cli)
-				}
-				localFile := cli.String("T")
-				c.UploadFile(localFile, analysiCmd, cli)
-			} else {
-				env := cli.FlagNames()[1]
-				switch env {
-				case "t":
-					c.ChangeEnv("t", config.Tpwd, cli)
-				case "p":
-					c.ChangeEnv("p", config.Ppwd, cli)
-				}
-				c.Run(analysiCmd, cli)
-			}
-
+			c.UploadFile(c.SOURCEFILE, analysiCmd, cli)
 		}
 	} else {
 		log.Fatal("Please use the -h parameter for help")
