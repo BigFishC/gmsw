@@ -32,7 +32,6 @@ func Encrypt() *cli.Command {
 		Name:      "encrypt",
 		Usage:     "Encrypt the string to conf.yml",
 		UsageText: "gmsf encrypt --tpwd=string | --ppwd=string",
-		Action:    (&config.ConfigStruct{}).UpdateConfig,
 		Flags: []cli.Flag{
 			&cli.StringFlag{
 				Name:  "tpwd",
@@ -43,6 +42,7 @@ func Encrypt() *cli.Command {
 				Usage: "--ppwd=`STRING`",
 			},
 		},
+		Action: (&config.ConfigStruct{}).UpdateConfig,
 	}
 }
 

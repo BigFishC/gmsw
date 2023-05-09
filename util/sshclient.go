@@ -55,8 +55,7 @@ func (c *Cli) Connect() error {
 	return nil
 }
 
-//Check host parameter
-
+// Check host parameter
 func CheckHost(host string) bool {
 	infos := strings.Split(host, "@")
 	ip := infos[1]
@@ -90,23 +89,18 @@ func (c *Cli) UploadFile(localfile string, remotefile string, cli *cli.Context) 
 		panic(err)
 	}
 	defer file.Close()
-
 	if cli.Args().Len() > 0 {
 		if err := c.Connect(); err != nil {
 			log.Fatal(err)
 		}
-
 		ftpFile, err := c.SFTPCLIENT.Create(remotefile)
-
 		if err != nil {
 			log.Fatal(err)
 		}
 		defer ftpFile.Close()
-
 		if err != nil {
 			panic(err)
 		}
-
 		if _, err := ftpFile.ReadFromWithConcurrency(file, 10); err != nil {
 			panic(err)
 		}
@@ -180,10 +174,8 @@ func (c *Cli) Server(cli *cli.Context) error {
 		} else {
 			log.Fatal("Enviroment is error !")
 		}
-
 	} else {
 		log.Fatal("Please use the -h parameter for help")
 	}
-
 	return nil
 }
