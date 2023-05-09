@@ -1,4 +1,4 @@
-package proc
+package service
 
 import (
 	"os"
@@ -7,7 +7,7 @@ import (
 	"github.com/shirou/gopsutil/v3/process"
 )
 
-//KillProcess func
+// KillProcess func
 func KillProcess(processname string) error {
 	processes, err := process.Processes()
 

@@ -1,4 +1,4 @@
-package util
+package service
 
 import (
 	"fmt"
@@ -58,11 +58,14 @@ func (c *Cli) Connect() error {
 // Check host parameter
 func CheckHost(host string) bool {
 	infos := strings.Split(host, "@")
-	ip := infos[1]
-	if net.ParseIP(ip) != nil {
+	if len(infos) != 2 {
+		return false
+	} else if net.ParseIP(infos[1]) != nil {
 		return true
+	} else {
+		return false
 	}
-	return false
+
 }
 
 // ChangeEnv
@@ -89,10 +92,12 @@ func (c *Cli) UploadFile(localfile string, remotefile string, cli *cli.Context) 
 		panic(err)
 	}
 	defer file.Close()
+
 	if cli.Args().Len() > 0 {
 		if err := c.Connect(); err != nil {
 			log.Fatal(err)
 		}
+
 		ftpFile, err := c.SFTPCLIENT.Create(remotefile)
 		if err != nil {
 			log.Fatal(err)
@@ -101,7 +106,7 @@ func (c *Cli) UploadFile(localfile string, remotefile string, cli *cli.Context) 
 		if err != nil {
 			panic(err)
 		}
-		if _, err := ftpFile.ReadFromWithConcurrency(file, 10); err != nil {
+		if _, err := ftpFile.ReadFromWithConcurrency(file, 5); err != nil {
 			panic(err)
 		}
 		fmt.Printf("Successed to transfer %s", remotefile)

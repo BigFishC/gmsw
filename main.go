@@ -5,9 +5,9 @@ import (
 	"os"
 
 	"github.com/BigFishC/gmsw/config"
-	"github.com/BigFishC/gmsw/proc"
+
 	"github.com/BigFishC/gmsw/service"
-	"github.com/BigFishC/gmsw/util"
+
 	"github.com/urfave/cli/v2"
 )
 
@@ -69,7 +69,7 @@ func RunCmd() *cli.Command {
 				Usage: "--trans=`FILENAME`",
 			},
 		},
-		Action: (&util.Cli{}).Server,
+		Action: (&service.Cli{}).Server,
 	}
 }
 
@@ -81,7 +81,7 @@ func KillProcess() *cli.Command {
 		Action: func(c *cli.Context) error {
 			if c.NArg() > 0 {
 				pname := c.Args().First()
-				proc.KillProcess(pname)
+				service.KillProcess(pname)
 			} else {
 				log.Fatal("Please use the -h parameter for help")
 			}
