@@ -79,7 +79,7 @@ func KillProcess() *cli.Command {
 		Usage:     "Kill servicename",
 		UsageText: "gmsf kill servicename",
 		Action: func(c *cli.Context) error {
-			if c.NArg() > 0 {
+			if c.NArg() == 1 {
 				pname := c.Args().First()
 				service.KillProcess(pname)
 			} else {

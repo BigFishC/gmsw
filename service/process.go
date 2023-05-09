@@ -1,6 +1,7 @@
 package service
 
 import (
+	"log"
 	"os"
 	"strings"
 
@@ -19,6 +20,8 @@ func KillProcess(processname string) error {
 		if strings.Contains(cmdline, processname) && !strings.Contains(cmdline, "gmsf") {
 			p.Kill()
 			os.Exit(0)
+		} else {
+			log.Fatalf("%s is not exist", processname)
 		}
 	}
 	return nil
