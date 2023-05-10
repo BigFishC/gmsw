@@ -75,7 +75,7 @@ func (c *Cli) ChangeEnv(envparam string, pwdparam string, cli *cli.Context) erro
 		panic(err)
 	}
 	analysiInfo := cli.String(envparam)
-	if analysiInfo == "" || CheckHost(analysiInfo) == false {
+	if analysiInfo == "" || !CheckHost(analysiInfo) {
 		log.Fatal("The parameter is error !")
 	} else {
 		analysiStringSplite := strings.Split(analysiInfo, "@")
