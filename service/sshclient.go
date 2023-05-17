@@ -160,12 +160,14 @@ func (c *Cli) Server(cli *cli.Context) error {
 			case "t":
 				c.ENV = "t"
 				c.EFLAG = c.EFLAG + 1
+				c.PWD = config.Tpwd
 			case "p":
 				c.ENV = "p"
 				c.EFLAG = c.EFLAG + 1
+				c.PWD = config.Ppwd
 			}
 		}
-		c.ChangeEnv(c.ENV, config.Tpwd, cli)
+		c.ChangeEnv(c.ENV, c.PWD, cli)
 		analysiCmd := cli.Args().Get(0)
 		if c.PORT == "" {
 			c.PORT = "22"
