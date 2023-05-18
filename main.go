@@ -5,9 +5,7 @@ import (
 	"os"
 
 	"github.com/BigFishC/gmsw/config"
-
 	"github.com/BigFishC/gmsw/service"
-
 	"github.com/urfave/cli/v2"
 )
 
@@ -21,6 +19,7 @@ func main() {
 		RunCmd(),
 		KillProcess(),
 		StartService(),
+		CheckStatus(),
 	}
 
 	app.Run(os.Args)
@@ -48,7 +47,7 @@ func Encrypt() *cli.Command {
 
 func RunCmd() *cli.Command {
 	return &cli.Command{
-		Name:      "cmd",
+		Name:      "recmd",
 		Usage:     "Run commands remotely and transfer files to a remote computer",
 		UsageText: "gmsf cmd [-P] [-T] [-t | -p] user@ip 'something'",
 		Flags: []cli.Flag{
@@ -76,7 +75,7 @@ func RunCmd() *cli.Command {
 func KillProcess() *cli.Command {
 	return &cli.Command{
 		Name:      "kill",
-		Usage:     "Kill servicename",
+		Usage:     "Kill servicename location",
 		UsageText: "gmsf kill servicename",
 		Action: func(c *cli.Context) error {
 			if c.NArg() == 1 {
@@ -91,10 +90,28 @@ func KillProcess() *cli.Command {
 	}
 }
 
+func CheckStatus() *cli.Command {
+	return &cli.Command{
+		Name:      "check",
+		Usage:     "check servicename location",
+		UsageText: "gmsf check servicename",
+		Action: func(c *cli.Context) error {
+			if c.NArg() == 1 {
+				pname := c.Args().First()
+				service.ProcessStatus(pname)
+			} else {
+				log.Fatal("Please use the -h parameter for help")
+			}
+
+			return nil
+		},
+	}
+}
+
 func StartService() *cli.Command {
 	return &cli.Command{
 		Name:      "start",
-		Usage:     "A command in the specified directory",
+		Usage:     "A command in the specified directory location",
 		UsageText: "gmsf start -d directory -c cmd",
 		Flags: []cli.Flag{
 			&cli.StringFlag{
