@@ -47,7 +47,7 @@ func Encrypt() *cli.Command {
 
 func RunCmd() *cli.Command {
 	return &cli.Command{
-		Name:      "recmd",
+		Name:      "cmd",
 		Usage:     "Run commands remotely and transfer files to a remote computer",
 		UsageText: "gmsf cmd [-P] [-T] [-t | -p] user@ip 'something'",
 		Flags: []cli.Flag{
