@@ -11,19 +11,25 @@ import (
 
 // KillProcess func
 func KillProcess(processname string) error {
+	tag := false
 	processes, err := process.Processes()
 
 	if err != nil {
 		panic(err)
 	}
+
 	for _, p := range processes {
-		cmdline, _ := p.Cmdline()
-		if strings.Contains(cmdline, processname) && !strings.Contains(cmdline, "gmsf") {
+		cmdlines, _ := p.Cmdline()
+		if strings.Contains(cmdlines, processname) && !strings.Contains(cmdlines, "gmsf") {
 			p.Kill()
+			tag = true
 			os.Exit(0)
-		} else {
-			log.Fatalf("%s is not exist", processname)
 		}
+	}
+	if tag {
+		fmt.Printf("The %s is killed.", processname)
+	} else {
+		log.Fatalf("The %s is not startted.", processname)
 	}
 	return nil
 }
@@ -38,8 +44,9 @@ func ProcessStatus(processname string) error {
 		cmdline, _ := p.Cmdline()
 		if strings.Contains(cmdline, processname) && !strings.Contains(cmdline, "gmsf") {
 			log.Fatalf("%s is exist! Please check it!", processname)
+			os.Exit(1)
 		}
 	}
-	fmt.Printf("%s is not exist! Go on!\n", processname)
+	fmt.Printf("The %s service is running.", processname)
 	return nil
 }
