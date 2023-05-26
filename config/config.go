@@ -63,6 +63,9 @@ func WriteEnvChange(param string, cli *cli.Context) error {
 
 // UpdateConfig 更新配置文件
 func (c *ConfigStruct) UpdateConfig(cli *cli.Context) error {
+	if cli.Args().Len() == 0 {
+		log.Fatal("Please use the -h parameter for help")
+	}
 	if cli.NArg() == 0 {
 		env := cli.FlagNames()[0]
 		switch env {

@@ -21,9 +21,7 @@ func main() {
 		StartService(),
 		CheckStatus(),
 	}
-
 	app.Run(os.Args)
-
 }
 
 func Encrypt() *cli.Command {
@@ -34,11 +32,11 @@ func Encrypt() *cli.Command {
 		Flags: []cli.Flag{
 			&cli.StringFlag{
 				Name:  "tpwd",
-				Usage: "--tpwd=`STRING`",
+				Usage: "`Password` of test enviroment",
 			},
 			&cli.StringFlag{
 				Name:  "ppwd",
-				Usage: "--ppwd=`STRING`",
+				Usage: "`Password` of prod enviroment",
 			},
 		},
 		Action: (&config.ConfigStruct{}).UpdateConfig,
@@ -75,7 +73,7 @@ func RunCmd() *cli.Command {
 func KillProcess() *cli.Command {
 	return &cli.Command{
 		Name:      "kill",
-		Usage:     "Kill servicename location",
+		Usage:     "Kill location service",
 		UsageText: "gmsf kill servicename",
 		Action: func(c *cli.Context) error {
 			if c.NArg() == 1 {
@@ -93,7 +91,7 @@ func KillProcess() *cli.Command {
 func CheckStatus() *cli.Command {
 	return &cli.Command{
 		Name:      "check",
-		Usage:     "check servicename location",
+		Usage:     "check location service status ",
 		UsageText: "gmsf check servicename",
 		Action: func(c *cli.Context) error {
 			if c.NArg() == 1 {
@@ -111,7 +109,7 @@ func CheckStatus() *cli.Command {
 func StartService() *cli.Command {
 	return &cli.Command{
 		Name:      "start",
-		Usage:     "A command in the specified directory location",
+		Usage:     "A command in the specified location directory",
 		UsageText: "gmsf start -d directory -c cmd",
 		Flags: []cli.Flag{
 			&cli.StringFlag{
