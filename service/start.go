@@ -22,7 +22,8 @@ func (s *SShell) CheckParam(c *cli.Context) bool {
 }
 
 func (s *SShell) StartUp(c *cli.Context) error {
-	if c.NArg() > 0 {
+
+	if c.NArg() == 0 {
 		if s.CheckParam(c) {
 			s.PATH = c.String("d")
 

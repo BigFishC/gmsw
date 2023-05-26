@@ -29,7 +29,7 @@ func KillProcess(processname string) error {
 	if tag {
 		fmt.Printf("The %s is killed.", processname)
 	} else {
-		log.Fatalf("The %s is not startted.", processname)
+		fmt.Printf("The %s is not startted.", processname)
 	}
 	return nil
 }
@@ -44,9 +44,8 @@ func ProcessStatus(processname string) error {
 		cmdline, _ := p.Cmdline()
 		if strings.Contains(cmdline, processname) && !strings.Contains(cmdline, "gmsf") {
 			log.Fatalf("%s is exist! Please check it!", processname)
-			os.Exit(1)
 		}
 	}
-	fmt.Printf("The %s service is running.", processname)
+	fmt.Printf("The %s service is not running. GO ON!", processname)
 	return nil
 }
