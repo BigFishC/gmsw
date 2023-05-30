@@ -49,6 +49,7 @@ func WriteEncryptPwd(param string, pwd string) error {
 		}
 		configVip.Set(param, pwd)
 		configVip.WriteConfig()
+		log.Fatal("Encrypt password successful!")
 	}
 	return nil
 }
@@ -63,10 +64,8 @@ func WriteEnvChange(param string, cli *cli.Context) error {
 
 // UpdateConfig 更新配置文件
 func (c *ConfigStruct) UpdateConfig(cli *cli.Context) error {
-	if cli.Args().Len() == 0 {
-		log.Fatal("Please use the -h parameter for help")
-	}
-	if cli.NArg() == 0 {
+
+	if cli.NArg() == 0 && cli.NumFlags() == 1 {
 		env := cli.FlagNames()[0]
 		switch env {
 		case "tpwd":
@@ -74,7 +73,7 @@ func (c *ConfigStruct) UpdateConfig(cli *cli.Context) error {
 		case "ppwd":
 			WriteEnvChange("ppwd", cli)
 		default:
-			fmt.Println("Param is error!")
+			log.Fatal("Please use the -h parameter for help")
 		}
 	} else {
 		log.Fatal("Please use the -h parameter for help")

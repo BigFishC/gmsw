@@ -2,9 +2,11 @@ package service
 
 import (
 	"fmt"
+	"io/ioutil"
 	"log"
 	"net"
 	"os"
+	"path"
 	"strings"
 
 	"github.com/BigFishC/gmsw/config"
@@ -86,30 +88,43 @@ func (c *Cli) ChangeEnv(envparam string, pwdparam string, cli *cli.Context) erro
 	return nil
 }
 
-func (c *Cli) UploadFile(localfile string, remotefile string, cli *cli.Context) error {
-	file, err := os.Open(localfile)
-	if err != nil {
-		panic(err)
-	}
-	defer file.Close()
+func (c *Cli) UploadFile(localFile string, remoteFile string, cli *cli.Context) error {
 
 	if cli.Args().Len() > 0 {
 		if err := c.Connect(); err != nil {
 			log.Fatal(err)
 		}
+		file, err := os.Open(localFile)
+		if err != nil {
+			panic(err)
+		}
+		defer file.Close()
+		fileState, err := file.Stat()
+		if fileState.IsDir() {
+			if err := c.SFTPCLIENT.MkdirAll(remoteFile); err != nil {
+				log.Fatal(err)
+			}
+			localFiles, _ := ioutil.ReadDir(localFile)
+			for _, localf := range localFiles {
+				nextRemoteFilePath := path.Join(remoteFile, localf.Name())
+				nextLocalFilePath := path.Join(localFile, localf.Name())
+				c.UploadFile(nextLocalFilePath, nextRemoteFilePath, cli)
+			}
+		} else {
+			ftpFile, err := c.SFTPCLIENT.Create(remoteFile)
+			if err != nil {
+				log.Fatal(err)
+			}
+			defer ftpFile.Close()
+			if err != nil {
+				panic(err)
+			}
+			if _, err := ftpFile.ReadFromWithConcurrency(file, 5); err != nil {
+				panic(err)
+			}
+			fmt.Printf("Successed to transfer %s;\n", remoteFile)
+		}
 
-		ftpFile, err := c.SFTPCLIENT.Create(remotefile)
-		if err != nil {
-			log.Fatal(err)
-		}
-		defer ftpFile.Close()
-		if err != nil {
-			panic(err)
-		}
-		if _, err := ftpFile.ReadFromWithConcurrency(file, 5); err != nil {
-			panic(err)
-		}
-		fmt.Printf("Successed to transfer %s", remotefile)
 	} else {
 		log.Fatal("Param is too match!")
 	}
