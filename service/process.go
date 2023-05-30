@@ -27,9 +27,9 @@ func KillProcess(processname string) error {
 		}
 	}
 	if tag {
-		fmt.Printf("The %s is killed.", processname)
+		fmt.Printf("The %s is killed.\n", processname)
 	} else {
-		fmt.Printf("The %s is not startted.", processname)
+		fmt.Printf("The %s is not startted.\n", processname)
 	}
 	return nil
 }
@@ -46,6 +46,6 @@ func ProcessStatus(processname string) error {
 			log.Fatalf("%s is exist! Please check it!", processname)
 		}
 	}
-	fmt.Printf("The %s service is not running. GO ON!", processname)
+	fmt.Printf("The %s service is not running. GO ON!\n", processname)
 	return nil
 }

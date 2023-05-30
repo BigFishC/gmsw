@@ -37,7 +37,7 @@ func OptConfig(confName string) *viper.Viper {
 // WriteEncryptPwd 密码加密写入配置方法
 func WriteEncryptPwd(param string, pwd string) error {
 	if pwd == "" {
-		fmt.Printf("%s is nil", param)
+		fmt.Printf("%s is nil.\n", param)
 	} else {
 		configVip := OptConfig("/bitnami/jenkins/conf.yml")
 		if err2 := configVip.ReadInConfig(); err2 != nil {
